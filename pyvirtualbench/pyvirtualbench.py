@@ -427,8 +427,8 @@ class PyVirtualBench:
         if (status != Status.SUCCESS):
             raise PyVirtualBenchException(status, self.nilcicapi, self.library_handle)
         device_name_size = c_size_t(device_name_size_out.value)
-        device_name = (c_wchar * device_name_size)()
-        status = self.nilcicapi.niVB_AddNetworkDeviceW(self.library_handle, c_wchar_p(ip_or_hostname), c_int32(timeout_in_ms), byref(device_name), c_size_t(device_name_size), byref(device_name_size_out))
+        device_name = (c_wchar * device_name_size.value)()
+        status = self.nilcicapi.niVB_AddNetworkDeviceW(self.library_handle, c_wchar_p(ip_or_hostname), c_int32(timeout_in_ms), byref(device_name), c_size_t(device_name_size.value), byref(device_name_size_out))
         if (status != Status.SUCCESS):
             raise PyVirtualBenchException(status, self.nilcicapi, self.library_handle)
         return device_name.value
@@ -1385,7 +1385,7 @@ class PyVirtualBench:
                                                         byref(data_stride), byref(initial_timestamp), byref(trigger_timestamp), byref(trigger_reason))
             if (status != Status.SUCCESS):
                 raise PyVirtualBenchException(status, self.nilcicapi, self.library_handle)
-            return data.value, data_stride.value, initial_timestamp, trigger_timestamp, MsoTriggerReason(trigger_reason.value)
+            return [val for val in data], data_stride.value, initial_timestamp, trigger_timestamp, MsoTriggerReason(trigger_reason.value)
 
         def read_digital_u64(self, data_size, sample_timestamps_size):
             ''' Transfers data from the instrument as long as the acquisition
